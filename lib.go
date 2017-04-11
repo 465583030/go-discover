@@ -1,5 +1,3 @@
-//Local network IP crawler library, looks for a top-level README, and open port 80 and 443.
-// TODO: Add documentation
 package discover
 
 import (
@@ -15,7 +13,6 @@ import (
 
 var wg sync.WaitGroup
 
-// Helper function that increments IP addresses.
 func inc(ip net.IP) {
 	for j := len(ip) - 1; j >= 0; j-- {
 		ip[j]++
@@ -25,7 +22,6 @@ func inc(ip net.IP) {
 	}
 }
 
-// Main structure used for initiating a crawler.
 type Crawler struct {
 	Name           string
 	LastIP         string
@@ -34,7 +30,6 @@ type Crawler struct {
 	GoRoutines     int
 }
 
-// Uses the above struct and initiates it.
 func NewCrawler() *Crawler {
 	c := new(Crawler)
 	return c
@@ -51,7 +46,6 @@ func fileExists(path string) (bool, error) {
 	return true, err
 }
 
-// Sends a request to said IP address + extension, if the response is 200 OK it will attempt to download the website.
 func Download(ip string, ext string) bool {
 	timeout := time.Duration(1 * time.Second)
 	netclient := http.Client{Timeout: timeout}
@@ -84,8 +78,6 @@ func Download(ip string, ext string) bool {
 	return true
 }
 
-// Function called via go routine. Returns results over a channel.
-// Initiated as a go routine and returns various information back to the main program.
 func discoverer(id int, start <-chan bool, jobs <-chan string, resblock <-chan bool, results chan<- string, lookfor []string) {
 	var results_list []string
 	<-start
@@ -107,7 +99,6 @@ func discoverer(id int, start <-chan bool, jobs <-chan string, resblock <-chan b
 	wg.Done()
 }
 
-// Main function that does everything. I'll make these doc's way better when I'm not in Math class.
 func (c Crawler) Discover() {
 	var cidrToCrawl string
 	lip := c.LastIP
@@ -115,7 +106,6 @@ func (c Crawler) Discover() {
 	chunksize := c.IPChunkSize
 	routines := c.GoRoutines
 	_ = lip
-	// I though this would be implied but apparently not.
 	if routines > chunksize {
 		log.Fatal("Amount of `GoRoutines` should not be greater than `IPChunkSize`")
 	}
@@ -123,7 +113,6 @@ func (c Crawler) Discover() {
 	if err != nil {
 		panic(err)
 	}
-	// Did you know this is a lot harder to recreate in C++?
 	for _, iface := range ifaces {
 		addrs, ifaceErr := iface.Addrs()
 		if ifaceErr != nil {
@@ -155,10 +144,6 @@ func (c Crawler) Discover() {
 		log.Fatal(err)
 	}
 	i := 0
-	// On your horses...
-	// Get ready!!
-	// GO!!!
-	// https://youtu.be/uUpDG680uew?t=4s
 	close(startblock)
 	for ip := oip.Mask(ipnet.Mask); ipnet.Contains(ip); inc(ip) {
 		if i <= chunksize {
