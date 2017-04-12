@@ -14,9 +14,9 @@ import (
 var wg sync.WaitGroup
 
 func inc(ip net.IP) {
-	for j := len(ip) - 1; j >= 0; j-- {
-		ip[j]++
-		if ip[j] > 0 {
+	for l := len(ip) - 1; l >= 0; l-- {
+		ip[l]++
+		if ip[l] > 0 {
 			break
 		}
 	}

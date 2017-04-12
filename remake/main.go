@@ -5,15 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"strings"
 )
 
 func inc(ip net.IP) {
-	for j := len(ip) - 1; j >= 0; j-- {
-		ip[j]++
-		if ip[j] > 0 {
+	for l := len(ip) - 1; l >= 0; l-- {
+		ip[l]++
+		if ip[l] > 0 {
 			break
 		}
 	}
@@ -39,19 +38,17 @@ func main() {
 	}
 	addr, err := func() (net.Addr, error) {
 		for _, iface := range ifaces {
-			addrs, ifaceErr := iface.Addrs()
-			if ifaceErr != nil {
-				log.Fatal(err)
+			addrs, err := iface.Addrs()
+			if err != nil {
+				panic(err)
 			}
 			for _, addr := range addrs {
 				oip, _, cidrErr := net.ParseCIDR(addr.String())
 				if cidrErr != nil {
-					log.Fatal(err)
+					panic(err)
 				}
-				if str := strings.HasPrefix(addr.String(), "127"); str == false {
-					if oip.To4() != nil {
-						return addr, nil
-					}
+				if str := strings.HasPrefix(addr.String(), "127"); str == false && oip.To4() != nil {
+					return addr, nil
 				}
 			}
 		}
